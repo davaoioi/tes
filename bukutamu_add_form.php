@@ -1,15 +1,19 @@
 <h1>Simpan Buku Tamu MySQL</h1>
 
-<?php 
-	$nama = $_POST["nama"];
-	$email = $_POST["email"];
-	$komentar = $_POST["komentar"];
+<?php
+$nama = $_POST["nama"];
+$email = $_POST["email"];
+$komentar = $_POST["komentar"];
 
-	$conn = mysql_connect("localhost","root","") or die("Koneksi Gagal");
-	mysql_select_db("latihan",$conn);
-	$sql = 'INSERT INTO bukutamu (nama,email,komentar) VALUES ("$nama","$email","$komentar")';
-	$query = mysql_query($sql,$conn);
-	echo '<table border="1">
+$conn = mysqli_connect("localhost", "root", "", "latihan") or die("Koneksi Gagal");
+if ($conn->connect_error) {
+	die("Connection failed: " . $conn->connect_error);
+}
+$stmt = $conn->prepare('INSERT INTO bukutamu (nama,email,komentar) VALUES (?,?,?)');
+$stmt->bind_param('sss', $nama, $email, $komentar);
+$stmt->execute() or die($conn->connect_error);
+$hasil = $stmt->get_result();
+echo '<table border="1">
 	<thead>
 		<tr>
 
@@ -20,18 +24,16 @@
 		</tr>
 	</thead>
 	<tbody>';
-	while ($row = mysql_fetch_array($query))
-	{
-	echo '<tr>
+
+echo '<tr>
 	</tbody>
-		<td>'.$row['nama'].'</td>
-		<td>'.$row['email'].'</td>
-		<td>'.$row['komentar'].'</td>
+		<td>' . $nama . '</td>
+		<td>' . $email . '</td>
+		<td>' . $komentar . '</td>
 		</thead>
 	<tbody>';
-	}
-	echo '
+echo '
 	</tbody>
 	</table>';
-	echo "Simpan bukutamu berhasil dilakukan";
- ?>
+echo "Simpan bukutamu berhasil dilakukan";
+?>
